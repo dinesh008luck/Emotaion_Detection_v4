@@ -36,3 +36,13 @@ stages:
     - model_building.n_estimators
     outs:
     - models/model.pkl
+  model_evaluation:
+    cmd: python src/models/model_evaluation.py
+    deps:
+    - data/feature/test_bow.csv
+    - models/model.pkl
+    - src/models/model_evaluation.py
+    outs:
+    - reports/confusion_matrix.npy
+    metrics:
+    - metrics.json
