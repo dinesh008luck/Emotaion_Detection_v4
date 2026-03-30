@@ -1,0 +1,4 @@
+[core]
+    remote = myremote
+['remote "myremote"']
+    url = C:\Users\SLS0822\AppData\Local\Temp\dvc_demo4
