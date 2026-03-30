@@ -26,3 +26,13 @@ stages:
     - build_features.max_features
     outs:
     - data/feature
+  model_building:
+    cmd: python src/models/model_building.py
+    deps:
+    - data/feature/train_bow.csv
+    - src/models/model_building.py
+    params:
+    - model_building.learning_rate
+    - model_building.n_estimators
+    outs:
+    - models/model.pkl
