@@ -9,3 +9,7 @@ model_building:
   n_estimators: 500
   learning_rate: 0.2
 
+model_evaluation:
+  model_path : models/model.pkl
+  test_data_path: data/feature/test_bow.csv
+  metrics_path: metrics.json

@@ -7,6 +7,7 @@ import sys
 import os
 from typing import Tuple, Dict
 import yaml
+from dvclive import Live
 
 from sklearn.metrics import (
     accuracy_score,
@@ -180,10 +181,6 @@ def evaluate_model(
     report = classification_report(y_test, y_pred, zero_division=0)
     logger.debug("Classification Report:\n%s", report)
 
-    cm = confusion_matrix(y_test, y_pred)
-
-    cm = confusion_matrix(y_test, y_pred)
-    
     np.save("reports/confusion_matrix.npy", cm)
     logger.info("Confusion matrix array saved.")
     
@@ -225,7 +222,11 @@ def main() -> None:
         metrics = evaluate_model(clf, X_test, y_test)
 
         save_metrics(metrics, params["metrics_path"])
-        
+
+        # Dvclive
+        with Live () as live:
+            for key, value in metrics.items():
+                live.log_metric(key, value)
 
         logger.info("Pipeline completed successfully.")
 
@@ -238,7 +239,6 @@ def main() -> None:
     except Exception:
         logger.exception("Pipeline failed due to an unexpected error.")
         sys.exit(1)
-
 
 if __name__ == "__main__":
     main()

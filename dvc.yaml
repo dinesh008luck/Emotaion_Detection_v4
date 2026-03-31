@@ -37,7 +37,7 @@ stages:
     outs:
     - models/model.pkl
   model_evaluation:
-    cmd: python src/models/model_evaluation.py
+    cmd: python -m src.models.model_evaluation
     deps:
     - data/feature/test_bow.csv
     - models/model.pkl
@@ -46,3 +46,15 @@ stages:
     - reports/confusion_matrix.npy
     metrics:
     - metrics.json
+  visualize:
+    cmd: python -m src.visualization.visualize
+    deps:
+    - reports/confusion_matrix.npy
+    - src/visualization/visualize.py
+    outs:
+    - reports/figures/confusion_matrix.png
+metrics:
+- dvclive/metrics.json
+plots:
+- dvclive/plots/metrics:
+    x: step
