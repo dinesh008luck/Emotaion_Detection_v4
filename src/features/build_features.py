@@ -7,7 +7,7 @@ import logging
 import pickle
 from typing import Tuple
 from pathlib import Path
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer     
 
 
 # ---------------- LOGGING CONFIG ---------------- #
@@ -153,54 +153,54 @@ def prepare_features(
     return X_train, X_test, y_train, y_test
 
 
-def build_bow_features(
+def build_tfidf_features(
     X_train: np.ndarray, X_test: np.ndarray, max_features: int
-) -> Tuple[np.ndarray, np.ndarray, CountVectorizer]:
+) -> Tuple[np.ndarray, np.ndarray, TfidfVectorizer]:
     """
-    Fit a Bag-of-Words CountVectorizer on training data and transform both splits.
+    Fit a TfIdf CountVectorizer on training data and transform both splits.
 
     The vectorizer is fit only on training data to prevent data leakage.
 
     Args:
         X_train: Training text array.
         X_test: Test text array.
-        max_features: Maximum vocabulary size for CountVectorizer.
+        max_features: Maximum vocabulary size for TfidfVectorizer.
 
     Returns:
         Tuple of (X_train_bow, X_test_bow, fitted_vectorizer).
     """
-    logger.info("Fitting CountVectorizer with max_features=%d ...", max_features)
+    logger.info("Fitting TfidfVectorizer with max_features=%d ...", max_features)
 
-    vectorizer = CountVectorizer(max_features=max_features)
-    X_train_bow = vectorizer.fit_transform(X_train).toarray()
-    X_test_bow = vectorizer.transform(X_test).toarray()
+    vectorizer = TfidfVectorizer(max_features=max_features)
+    X_train_tfidf = vectorizer.fit_transform(X_train).toarray()
+    X_test_tfidf = vectorizer.transform(X_test).toarray()
 
     logger.debug(
-        "BoW feature matrix shapes — Train: %s, Test: %s",
-        X_train_bow.shape,
-        X_test_bow.shape,
+        "TfidfVectorizer feature matrix shapes — Train: %s, Test: %s",
+        X_train_tfidf.shape,
+        X_test_tfidf.shape,
     )
-    return X_train_bow, X_test_bow, vectorizer
+    return X_train_tfidf, X_test_tfidf, vectorizer
 
 
 def save_features(
     data_path: str,
-    X_train_bow: np.ndarray,
+    X_train_tfidf: np.ndarray,
     y_train: np.ndarray,
-    X_test_bow: np.ndarray,
+    X_test_tfidf: np.ndarray,
     y_test: np.ndarray,
-    vectorizer: CountVectorizer,
+    vectorizer: TfidfVectorizer,
 ) -> None:
     """
-    Save BoW feature DataFrames and the fitted vectorizer to disk.
+    Save TfidfVectorizer feature DataFrames and the fitted vectorizer to disk.
 
     Args:
         data_path: Directory to save output files.
-        X_train_bow: Training BoW feature matrix.
+        X_train_tfidf: Training tfidf feature matrix.
         y_train: Training labels.
-        X_test_bow: Test BoW feature matrix.
+        X_test_tfidf: Test tfidf feature matrix.
         y_test: Test labels.
-        vectorizer: Fitted CountVectorizer to persist.
+        vectorizer: Fitted TfidfVectorizer to persist.
 
     Raises:
         OSError: If the directory cannot be created or files cannot be written.
@@ -208,14 +208,14 @@ def save_features(
     logger.info("Saving feature data to: %s", data_path)
     os.makedirs(data_path, exist_ok=True)
 
-    train_df = pd.DataFrame(X_train_bow)
+    train_df = pd.DataFrame(X_train_tfidf)
     train_df["label"] = y_train
 
-    test_df = pd.DataFrame(X_test_bow)
+    test_df = pd.DataFrame(X_test_tfidf)
     test_df["label"] = y_test
 
-    train_df.to_csv(os.path.join(data_path, "train_bow.csv"), index=False)
-    test_df.to_csv(os.path.join(data_path, "test_bow.csv"), index=False)
+    train_df.to_csv(os.path.join(data_path, "train_tfidf.csv"), index=False)
+    test_df.to_csv(os.path.join(data_path, "test_tfidf.csv"), index=False)
 
     # Persist the fitted vectorizer so it can be reused at inference time
     vectorizer_path = os.path.join(data_path, "vectorizer.pkl")
@@ -252,16 +252,16 @@ def main() -> None:
 
         X_train, X_test, y_train, y_test = prepare_features(train_data, test_data)
 
-        X_train_bow, X_test_bow, vectorizer = build_bow_features(
+        X_train_tfidf, X_test_tfidf, vectorizer = build_tfidf_features(
             X_train, X_test, max_features
         )
 
         feature_path = project_root / "data" / "feature"
         save_features(
             str(feature_path),
-            X_train_bow,
+            X_train_tfidf,
             y_train,
-            X_test_bow,
+            X_test_tfidf,
             y_test,
             vectorizer,
         )

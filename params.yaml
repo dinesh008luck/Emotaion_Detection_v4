@@ -11,5 +11,5 @@ model_building:
 
 model_evaluation:
   model_path : models/model.pkl
-  test_data_path: data/feature/test_bow.csv
+  test_data_path: data/feature/test_tfidf.csv
   metrics_path: metrics.json

@@ -163,7 +163,8 @@ def train_model(
     clf = GradientBoostingClassifier(
         n_estimators=n_estimators,
         learning_rate=learning_rate,
-        random_state=42,  # ensures reproducibility
+        random_state=42,
+        max_depth= 5,  
     )
     clf.fit(X_train, y_train)
 
@@ -205,7 +206,7 @@ def main() -> None:
         n_estimators, learning_rate = load_params(str(params_path))
 
         X_train, y_train = load_data(
-            train_path=os.path.join("data", "feature", "train_bow.csv")
+            train_path=os.path.join("data", "feature", "train_tfidf.csv")
         )
 
         clf = train_model(X_train, y_train, n_estimators, learning_rate)
