@@ -1,9 +1,9 @@
 data_preprocess:
-  test_size : 0.4
+  test_size : 0.2
   random_state: 30
 
 build_features:
-  max_features: 1000
+  max_features: 2000
 
 model_building:
   n_estimators: 500
